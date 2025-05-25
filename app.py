@@ -15,7 +15,13 @@ def ocr_image():
     img = Image.open(io.BytesIO(image))
     results = reader.readtext(img)
     texts = [text for _, text, _ in results]
-    return jsonify({'texts': texts})
+
+    gpa_texts = [t for t in texts if t.upper().startswith("GPA")]
+
+    if not gpa_texts:
+        return jsonify({'text:' "Not found GPA..."}), 200
+
+    return jsonify({'text': gpa_texts}), 200
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=10000)
+    app.run(host='0.0.0.0', port=8080)
