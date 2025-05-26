@@ -12,7 +12,7 @@ def ocr_image():
         return jsonify({'error': 'No image uploaded'}), 400
 
     image = request.files['image'].read()
-    img = Image.open(io.BytesIO(image))
+    img = Image.open(io.BytesIO(image)).convert('L')
     results = reader.readtext(img)
     texts = [text for _, text, _ in results]
 
