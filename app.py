@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 import easyocr
 from PIL import Image
 import io
+import re
 
 app = Flask(__name__)
 reader = easyocr.Reader(['en', 'vi'])
@@ -14,9 +15,12 @@ def ocr_image():
     image = request.files['image'].read()
     img = Image.open(io.BytesIO(image)).convert('L')
     results = reader.readtext(img)
-    texts = [text for _, text, _ in results]
+    
+    full_text = ''.join([text.replace(' ', '') for _, text, _ in results])
+    
+    match = re.search(r'(GPA\.\d{4}-\d{4}-\d{4}-\d{5})', full_text)
 
-    gpa_texts = [t for t in texts if t.upper().startswith("GPA")]
+    gpa_texts = match.group()
 
     if not gpa_texts:
         return jsonify({'text:' "Not found GPA..."}), 200
